@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://code.createjs.com/1.0.0/createjs.min.js"></script>
+
+    <title>CreateJS Analogni sat</title>
+    <style>
+      body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        background-image: radial-gradient(#aeeede, #94bbe9);
+      }
+
+      canvas {
+        position: absolute;
+        border: none;
+        border-radius: 20%;
+      }
+
+      #clock-background {
+        position: relative;
+        top: 150px;
+        width: 200px;
+        height: 100px;
+        z-index: 1;
+        opacity: 0.25;
+      }
+    </style>
+  </head>
+  <body>
+    <img
+      src="Itacademy-removebg-preview.png"
+      alt="Clock Background"
+      id="clock-background"
+    />
+    <canvas id="clock" width="400" height="400"></canvas>
+    <script>
+      const canvas = document.getElementById("clock");
+      const stage = new createjs.Stage(canvas);
+
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = canvas.width / 2 - 10;
+
+      function drawClock() {
+        const now = new Date();
+        const hours = now.getHours() % 12;
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+
+        stage.removeAllChildren();
+
+        const background = new createjs.Shape();
+        const gradient = background.graphics
+          .beginRadialGradientFill(
+            ["#3ffbc0", "#fce246"],
+            [0, 1],
+            centerX,
+            centerY,
+            0,
+            centerX,
+            centerY,
+            radius
+          )
+          .drawRect(0, 0, canvas.width, canvas.height);
+        stage.addChild(background);
+
+        const clockFace = new createjs.Shape();
+        clockFace.graphics
+          .beginStroke("#fff")
+          .setStrokeStyle(10)
+          .drawCircle(centerX, centerY, radius);
+        stage.addChild(clockFace);
+
+        drawHand((hours + minutes / 60) * 30, 0.4 * radius, "#000");
+        drawHand((minutes + seconds / 60) * 6, 0.6 * radius, "#fff");
+        drawHand(seconds * 6, 0.7 * radius, "red");
+
+        stage.update();
+      }
+
+      function drawHand(angle, length, color) {
+        const hand = new createjs.Shape();
+        hand.graphics
+          .beginStroke(color)
+          .setStrokeStyle(8, "round")
+          .moveTo(centerX, centerY)
+          .lineTo(
+            centerX + Math.cos((angle - 90) * (Math.PI / 180)) * length,
+            centerY + Math.sin((angle - 90) * (Math.PI / 180)) * length
+          );
+        stage.addChild(hand);
+      }
+
+      createjs.Ticker.addEventListener("tick", function () {
+        drawClock();
+      });
+
+      drawClock();
+    </script>
+  </body>
+</html>
